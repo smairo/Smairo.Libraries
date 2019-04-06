@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Smairo.Extensions\Smairo.Extensions.csproj" />
+    <ProjectReference Include="..\..\src\Smairo.Extensions\Smairo.Extensions.csproj" />
   </ItemGroup>
 
 </Project>

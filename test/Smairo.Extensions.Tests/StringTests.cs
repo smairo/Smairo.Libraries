@@ -1,11 +1,11 @@
 ﻿using System;
-using Smairo.Extensions;
 using Xunit;
-namespace Smairo.Libraries.Tests
+namespace Smairo.Extensions.Tests
 {
     public class StringTests
     {
         [Theory]
+        // ReSharper disable StringLiteralTypo
         [InlineData("Name", "ME", true)]
         [InlineData("Name", "Name", true)]
         [InlineData("Name", "NAMe", true)]
@@ -16,6 +16,7 @@ namespace Smairo.Libraries.Tests
         [InlineData("Name", "Namez", false)]
         [InlineData("Ärräpöö", "äpö", true)]
         [InlineData("Ärräpöö", "ÖÖ", true)]
+        // ReSharper enable StringLiteralTypo
         public void Test_Contains(string test, string compare, bool actual)
         {
             Assert.Equal(actual, test.Contains(compare, StringComparison.InvariantCultureIgnoreCase));

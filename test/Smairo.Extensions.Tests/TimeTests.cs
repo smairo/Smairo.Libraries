@@ -1,38 +1,36 @@
 ﻿using System;
 using System.Globalization;
-using Smairo.Extensions;
 using Xunit;
-
-namespace Smairo.Libraries.Tests
+namespace Smairo.Extensions.Tests
 {
     public class TimeTests
     {
         // Global variables
         private const string Tz = "Europe/Helsinki";
         private const string InvalidTz = "InvalidTimeZoneThatDoesNotExist";
-        private DateTime _localTestable = new DateTime(2020, 1, 1, 2, 0, 0, DateTimeKind.Local);
-        private DateTime _utcTestable = new DateTime(2020, 1, 1, 2, 0, 0, DateTimeKind.Utc);
-        private DateTime _unspecifiedTestable = new DateTime(2020, 1, 1, 2, 0, 0, DateTimeKind.Unspecified);
+        private readonly DateTime _localTestable = new DateTime(2020, 1, 1, 2, 0, 0, DateTimeKind.Local);
+        private readonly DateTime _utcTestable = new DateTime(2020, 1, 1, 2, 0, 0, DateTimeKind.Utc);
+        private readonly DateTime _unspecifiedTestable = new DateTime(2020, 1, 1, 2, 0, 0, DateTimeKind.Unspecified);
 
         [Fact]
-        public void Test_ToTimezoneFromUtc()
+        public void Test_ToLocalTime()
         {
             // "Europe/Helsinki" is two hours ahead in utc in winter
-            var localActual = _localTestable.ToUniversalTime().AddHours(2);
+            var localActual = _localTestable.AddHours(2);
 
-            Assert.Equal(localActual, _localTestable.ToTimezoneFromUtc(Tz));
-            Assert.Equal(_utcTestable.AddHours(2), _utcTestable.ToTimezoneFromUtc(Tz));
-            Assert.Equal(_unspecifiedTestable.AddHours(2), _unspecifiedTestable.ToTimezoneFromUtc(Tz));
-            Assert.Throws<InvalidOperationException>(() => _unspecifiedTestable.ToTimezoneFromUtc(InvalidTz));
+            Assert.Equal(localActual, _localTestable.ToLocalTime(Tz));
+            Assert.Equal(_utcTestable.AddHours(2), _utcTestable.ToLocalTime(Tz));
+            Assert.Equal(_unspecifiedTestable.AddHours(2), _unspecifiedTestable.ToLocalTime(Tz));
+            Assert.Throws<InvalidOperationException>(() => _unspecifiedTestable.ToLocalTime(InvalidTz));
         }
 
         [Fact]
-        public void Test_ToUtcFromTimezone()
+        public void Test_ToUtcTime()
         {
-            Assert.Equal(new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc), _localTestable.ToUtcFromTimezone(Tz));
-            Assert.Equal(new DateTime(2020, 1, 1, 2, 0, 0, DateTimeKind.Utc), _utcTestable.ToUtcFromTimezone(Tz));
-            Assert.Equal(new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc), _unspecifiedTestable.ToUtcFromTimezone(Tz));
-            Assert.Throws<InvalidOperationException>(() => _unspecifiedTestable.ToUtcFromTimezone(InvalidTz));
+            Assert.Equal(new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc), _localTestable.ToUtcTime(Tz));
+            Assert.Equal(new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc), _utcTestable.ToUtcTime(Tz));
+            Assert.Equal(new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc), _unspecifiedTestable.ToUtcTime(Tz));
+            Assert.Throws<InvalidOperationException>(() => _unspecifiedTestable.ToUtcTime(InvalidTz));
         }
 
         [Fact]
@@ -41,7 +39,7 @@ namespace Smairo.Libraries.Tests
             Assert.Equal(2, _localTestable.GetOffsetInHours(Tz));
             Assert.Equal(2, _utcTestable.GetOffsetInHours(Tz));
             Assert.Equal(2, _unspecifiedTestable.GetOffsetInHours(Tz));
-            Assert.Throws<InvalidOperationException>(() => _unspecifiedTestable.ToUtcFromTimezone(InvalidTz));
+            Assert.Throws<InvalidOperationException>(() => _unspecifiedTestable.GetOffsetInHours(InvalidTz));
         }
 
         [Theory]
@@ -88,7 +86,5 @@ namespace Smairo.Libraries.Tests
             var actually = DateTime.ParseExact(actual, "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
             Assert.Equal(actually, testable.RoundDown(TimeSpan.FromHours(hours)));
         }
-
-
     }
 }
