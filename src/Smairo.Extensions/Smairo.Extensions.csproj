@@ -5,8 +5,7 @@
     <Version>1.0.0</Version>
     <Authors>Miro Holopainen</Authors>
     <Description>Contains general extensions for basic types</Description>
-    <PackageProjectUrl>https://github.com/smairo/Smairo.Libraries</PackageProjectUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/smairo/Smairo.Libraries/tree/master/src/Smairo.Extensions</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>

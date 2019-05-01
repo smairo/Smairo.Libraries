@@ -1,5 +1,5 @@
 # How to use dependency container
-You create a starup class that inherits the IModule. Then add your services etc to the startup class and then create containerBuilder where ever you wish to access DI container.
+You create a startup class that inherits the IModule. Then add your services etc to the startup class and then create containerBuilder where ever you wish to access DI container.
 
 ## Example (.net console project)
 Starup.cs:
@@ -27,8 +27,9 @@ public class Program
 {
 	// Create container using Startup class as a module, then build it to static variable
 	public static IServiceProvider Provider = new ContainerBuilder()
-												.RegisterModule(new Startup())
-												.Build();
+		.RegisterModule(new Startup())
+		.Build();
+		
 	static void Main(string[] args)
 	{
 		// Get IMyClass from container

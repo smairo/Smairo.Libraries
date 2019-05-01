@@ -12,7 +12,7 @@ namespace Smairo.Extensions
         /// <returns>DateTime in Unspecified kind</returns>
         public static DateTime ToLocalTime(this DateTime dateTime, string tz)
         {
-            dateTime = ModifyToSameStampAsUtcKind(dateTime);
+            dateTime = AsUtcKind(dateTime);
             var timeZone = GetTimezone(tz);
             var instant = Instant.FromDateTimeUtc(dateTime);
             return instant.InZone(timeZone).ToDateTimeUnspecified();
@@ -27,7 +27,7 @@ namespace Smairo.Extensions
         public static DateTime ToUtcTime(this DateTime dateTime, string timezone)
         {
             // Make sure that kind for stamp is UNSPECIFIED, even if given stamp has UTC kind
-            dateTime = ModifyToSameStampAsUnspecifiedKind(dateTime);
+            dateTime = AsUnspecifiedKind(dateTime);
 
             var localTime = LocalDateTime.FromDateTime(dateTime);
             var timeZone = GetTimezone(timezone);
@@ -47,7 +47,7 @@ namespace Smairo.Extensions
         /// <returns>hours from utc in int</returns>
         public static int GetOffsetInHours(this DateTime dateTime, string tz)
         {
-            dateTime = ModifyToSameStampAsUtcKind(dateTime);
+            dateTime = AsUtcKind(dateTime);
             var timestampInstant = Instant.FromDateTimeUtc(dateTime);
             var timeZone = GetTimezone(tz);
             var utcOffset = timeZone.GetUtcOffset(timestampInstant);
@@ -97,7 +97,7 @@ namespace Smairo.Extensions
         /// </summary>
         /// <param name="dateTime"></param>
         /// <returns></returns>
-        private static DateTime ModifyToSameStampAsUnspecifiedKind(DateTime dateTime)
+        private static DateTime AsUnspecifiedKind(DateTime dateTime)
         {
             return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second, dateTime.Millisecond, DateTimeKind.Unspecified);
         }
@@ -107,7 +107,7 @@ namespace Smairo.Extensions
         /// </summary>
         /// <param name="dateTime"></param>
         /// <returns></returns>
-        private static DateTime ModifyToSameStampAsUtcKind(DateTime dateTime)
+        private static DateTime AsUtcKind(DateTime dateTime)
         {
             return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second, dateTime.Millisecond, DateTimeKind.Utc);
         }

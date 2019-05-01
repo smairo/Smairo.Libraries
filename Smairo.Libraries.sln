@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Smairo.DependencyContainer.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Smairo.Extensions.Tests", "test\Smairo.Extensions.Tests\Smairo.Extensions.Tests.csproj", "{7F52FAF6-7F0F-4352-AE56-F90EA819C20A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smairo.AspNetHosting", "src\Smairo.AspNetHosting\Smairo.AspNetHosting.csproj", "{61D9543D-AF42-46A8-94B3-D0260BD72809}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{7F52FAF6-7F0F-4352-AE56-F90EA819C20A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F52FAF6-7F0F-4352-AE56-F90EA819C20A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F52FAF6-7F0F-4352-AE56-F90EA819C20A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61D9543D-AF42-46A8-94B3-D0260BD72809}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61D9543D-AF42-46A8-94B3-D0260BD72809}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61D9543D-AF42-46A8-94B3-D0260BD72809}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61D9543D-AF42-46A8-94B3-D0260BD72809}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +52,7 @@ Global
 		{2AAA32DA-6240-4CB2-9804-BC808461D241} = {47F25442-C191-4A00-9D2E-C9A26EAFDFF8}
 		{2DE11549-F796-47C7-8867-BABF27BE4CDD} = {F87EDB6D-5AFD-4307-ABF0-2533B8B984FC}
 		{7F52FAF6-7F0F-4352-AE56-F90EA819C20A} = {F87EDB6D-5AFD-4307-ABF0-2533B8B984FC}
+		{61D9543D-AF42-46A8-94B3-D0260BD72809} = {47F25442-C191-4A00-9D2E-C9A26EAFDFF8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9BC93336-89D7-4D59-ABAF-4C97F2A3C401}
