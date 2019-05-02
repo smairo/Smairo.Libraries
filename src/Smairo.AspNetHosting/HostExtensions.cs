@@ -1,7 +1,11 @@
 ﻿using System;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.AspNetCore.Server.Kestrel.Core.Internal;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Serilog;
 namespace Smairo.AspNetHosting
 {
@@ -26,12 +30,22 @@ namespace Smairo.AspNetHosting
         /// Create more robust host with configuration sources (app settings, env specific app settings, environmental variables, user secrets and azure key vault) + serilog logging
         /// </summary>
         /// <typeparam name="TStartup"></typeparam>
-        /// <param name="hostBuilder"></param>
         /// <returns></returns>
-        public static IWebHostBuilder CreateExtendedBuilderWithLogging<TStartup>(this IWebHostBuilder hostBuilder) where TStartup : class
+        public static IWebHostBuilder CreateExtendedBuilderWithLogging<TStartup>() where TStartup : class
         {
-            return hostBuilder
+            return new WebHostBuilder()
+                .UseKestrel()
+                .UseContentRoot(Directory.GetCurrentDirectory())
                 .ConfigureAppConfiguration(CreateConfigurations<TStartup>)
+                .UseIISIntegration()
+                .UseDefaultServiceProvider((context, options) =>
+                {
+                    options.ValidateScopes = context.HostingEnvironment.IsDevelopment();
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddTransient<IConfigureOptions<KestrelServerOptions>, KestrelServerOptionsSetup>();
+                })
                 .UseSerilog(CreateSerilogLogging);
         }
 
