@@ -1,6 +1,9 @@
 ﻿using System;
 namespace Smairo.Extensions
 {
+    /// <summary>
+    /// Contains general extensions for <see cref="string"/>
+    /// </summary>
     public static class StringExtensions
     {
         /// <summary>

@@ -2,10 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Authors>Miro Holopainen</Authors>
     <Description>Contains extended configration builder for aspnet core host setup + serilog logger setup for host</Description>
     <PackageProjectUrl>https://github.com/smairo/Smairo.Libraries/tree/master/src/Smairo.AspNetHosting</PackageProjectUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

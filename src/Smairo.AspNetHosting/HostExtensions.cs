@@ -9,6 +9,9 @@ using Microsoft.Extensions.Options;
 using Serilog;
 namespace Smairo.AspNetHosting
 {
+    /// <summary>
+    /// Provides convenience methods for creating instances of <see cref="IWebHost"/> and <see cref="IWebHostBuilder"/> with azure key vault and serilog
+    /// </summary>
     public static class HostExtensions
     {
         /// <summary>
@@ -143,7 +146,7 @@ namespace Smairo.AspNetHosting
             else
             {
                 // Should be shown in Kudu and app logs
-                Console.WriteLine($"Azure key vault could not be added. This might indicate that AzureKeyVault section is missing from configuration");
+                Console.WriteLine($"Azure key vault could not be added. This might indicate that AzureKeyVault section (or AzureKeyVault:ClientId, AzureKeyVault:ClientSecret) is missing from configuration");
                 logger.Warning("Invalid Azure KeyVault configuration. KeyVault won't be used!");
             }
             return configurationBuilder;

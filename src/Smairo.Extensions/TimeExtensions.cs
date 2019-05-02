@@ -2,6 +2,9 @@
 using NodaTime;
 namespace Smairo.Extensions
 {
+    /// <summary>
+    /// Contains general extensions for <see cref="DateTime"/>
+    /// </summary>
     public static class TimeExtensions
     {
         /// <summary>
