@@ -32,10 +32,15 @@ namespace Smairo.Example.WebApplication.NetCore
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
-            return WebHost
-                //.CreateDefaultBuilder(args) <-- Remove
+            return HostExtensions
                 .CreateExtendedBuilderWithLogging<Startup>()
                 .UseStartup<Startup>();
+				
+			// MS default
+            //return WebHost
+                //.CreateDefaultBuilder(args)
+                //.CreateExtendedBuilderWithLogging<Startup>()
+                //.UseStartup<Startup>();
         }
     }
 }
