@@ -4,6 +4,8 @@ You create a startup class that inherits the IModule. Then add your services etc
 ## Example (.net console project)
 Starup.cs:
 ```
+// Install-Package Smairo.DependencyContainer
+
 // Create startup class and inherit IModule from Smairo.DependencyContainer
 public class Startup : IModule
 {
@@ -23,6 +25,8 @@ public class Startup : IModule
 
 Program.cs:
 ```
+using Smairo.DependencyContainer;
+
 public class Program
 {
 	// Create container using Startup class as a module, then build it to static variable

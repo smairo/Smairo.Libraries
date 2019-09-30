@@ -2,15 +2,13 @@
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.AspNetCore.Server.Kestrel.Core.Internal;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 namespace Smairo.AspNetHosting
 {
     /// <summary>
-    /// Provides convenience methods for creating instances of <see cref="IWebHost"/> and <see cref="IWebHostBuilder"/> with azure key vault and serilog
+    /// Provides convenience methods for creating instances of <see cref="IHostBuilder"/> with azure key vault and serilog
     /// </summary>
     public static class HostExtensions
     {
@@ -18,10 +16,10 @@ namespace Smairo.AspNetHosting
         /// Create <see cref="Serilog.Core.Logger"/> using base configuration sources (app settings, environmental variables)
         /// </summary>
         /// <returns></returns>
-        public static Serilog.Core.Logger CreateLogger()
+        public static Serilog.Core.Logger CreateLogger(string[] args)
         {
-            var configuration = new ConfigurationBuilder()
-                .CreateBaseConfiguration()
+            IConfiguration configuration = new ConfigurationBuilder()
+                .CreateBaseConfigurations(args)
                 .Build();
 
             return new LoggerConfiguration()
@@ -34,61 +32,37 @@ namespace Smairo.AspNetHosting
         /// </summary>
         /// <typeparam name="TStartup"></typeparam>
         /// <returns></returns>
-        public static IWebHostBuilder CreateExtendedBuilderWithLogging<TStartup>() where TStartup : class
+        public static IHostBuilder CreateExtendedBuilderWithSerilog<TStartup>(this IHostBuilder hostBuilder,
+            string[] args,
+            Action<KestrelServerOptions> kestrelConfiguration = null,
+            Action<IConfigurationBuilder> customAppConfiguration = null) 
+            where TStartup : class
         {
-            return new WebHostBuilder()
-                .UseKestrel()
+            hostBuilder
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .ConfigureAppConfiguration(CreateConfigurations<TStartup>)
-                .UseIISIntegration()
-                .UseDefaultServiceProvider((context, options) =>
+                .ConfigureAppConfiguration(appConfiguration => CreateAppConfiguration<TStartup>(appConfiguration, args))
+                .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    options.ValidateScopes = context.HostingEnvironment.IsDevelopment();
-                })
-                .ConfigureServices(services =>
-                {
-                    services.AddTransient<IConfigureOptions<KestrelServerOptions>, KestrelServerOptionsSetup>();
+                    if (kestrelConfiguration != null)
+                    {
+                        webBuilder
+                            .ConfigureKestrel(kestrelConfiguration);
+                    }
+
+                    webBuilder
+                        .UseKestrel()
+                        .UseIISIntegration()
+                        .UseStartup<TStartup>();
                 })
                 .UseSerilog(CreateSerilogLogging);
-        }
 
-        #region Internals
-        /// <summary>
-        /// Base configuration
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <returns></returns>
-        internal static IConfigurationBuilder CreateBaseConfiguration(this IConfigurationBuilder builder)
-        {
-            var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
-            return builder
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{environmentName}.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables();
-        }
+            if (customAppConfiguration != null)
+            {
+                hostBuilder
+                    .ConfigureAppConfiguration(customAppConfiguration);
+            }
 
-        /// <summary>
-        /// Base + User Secrets with error handling + Key vault with error handling
-        /// </summary>
-        /// <typeparam name="TStartup"></typeparam>
-        /// <param name="hostContext"></param>
-        /// <param name="configurationBuilder"></param>
-        internal static void CreateConfigurations<TStartup>(WebHostBuilderContext hostContext, IConfigurationBuilder configurationBuilder) where TStartup : class
-        {
-            configurationBuilder
-                .CreateBaseConfiguration()
-                .AddJsonFile("keyvault.json", optional: true, reloadOnChange: true)
-                .TryAddUserSecrets<TStartup>();
-
-            // Build so that we can try to get key vault values from configurations
-            var configuration = configurationBuilder
-                .Build();
-
-            // Key vault
-            configurationBuilder
-                .TryAddAzureKeyVault(configuration)
-                .Build();
+            return hostBuilder;
         }
 
         /// <summary>
@@ -96,29 +70,92 @@ namespace Smairo.AspNetHosting
         /// </summary>
         /// <param name="hostContext"></param>
         /// <param name="loggerConfiguration"></param>
-        internal static void CreateSerilogLogging(WebHostBuilderContext hostContext, LoggerConfiguration loggerConfiguration)
+        internal static void CreateSerilogLogging(HostBuilderContext hostContext, LoggerConfiguration loggerConfiguration)
         {
             loggerConfiguration
                 .ReadFrom.Configuration(hostContext.Configuration);
         }
 
         /// <summary>
-        /// Tires to add user secrets
+        /// Create basic and advanced configuration
+        /// </summary>
+        /// <typeparam name="TStartup"></typeparam>
+        /// <param name="appConfiguration"></param>
+        /// <param name="args"></param>
+        private static void CreateAppConfiguration<TStartup>(IConfigurationBuilder appConfiguration, string[] args)
+            where TStartup : class
+        {
+            appConfiguration
+                .CreateBaseConfigurations(args)
+                .CreateAdvancedConfigurations<TStartup>();
+        }
+
+        /// <summary>
+        /// Basic: Commandline, appsettings, appsettings.env, environmentalVariables
+        /// </summary>
+        /// <param name="configurationBuilder"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        internal static IConfigurationBuilder CreateBaseConfigurations(this IConfigurationBuilder configurationBuilder, string[] args)
+        {
+            var environmentString = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
+            return configurationBuilder
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddCommandLine(args)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{environmentString}.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+        }
+
+
+        /// <summary>
+        /// Advanced: User secrets, azure key vault. Override is possible with user secrets
         /// </summary>
         /// <typeparam name="TStartup"></typeparam>
         /// <param name="configurationBuilder"></param>
         /// <returns></returns>
-        internal static IConfigurationBuilder TryAddUserSecrets<TStartup>(this IConfigurationBuilder configurationBuilder) where TStartup : class
+        internal static IConfigurationBuilder CreateAdvancedConfigurations<TStartup>(this IConfigurationBuilder configurationBuilder)
+            where TStartup : class
         {
-            try
+            configurationBuilder
+                .AddJsonFile("keyvault.json", optional: true, reloadOnChange: true)
+                .TryAddUserSecrets<TStartup>();
+
+            IConfiguration configuration = configurationBuilder
+                .Build();
+
+            configurationBuilder
+                .TryAddAzureKeyVault(configuration)
+                // Add again so that you can override key vault values
+                .TryAddUserSecrets<TStartup>() 
+                .Build();
+
+            return configurationBuilder;
+        }
+
+        /// <summary>
+        /// Tries to add user secrets
+        /// </summary>
+        /// <typeparam name="TStartup"></typeparam>
+        /// <param name="configurationBuilder"></param>
+        /// <returns></returns>
+        internal static IConfigurationBuilder TryAddUserSecrets<TStartup>(this IConfigurationBuilder configurationBuilder)
+            where TStartup : class
+        {
+            using (var logger = CreateLogger(new string[0]))
             {
-                configurationBuilder
-                    .AddUserSecrets<TStartup>();
-            }
-            catch (Exception e)
-            {
-                // Should be shown in Kudu and app logs
-                Console.WriteLine($"Exception occured when trying to add UserSecrets to app configuration. If your app does not support user secrets, this was expected. Exception: {e}");
+                try
+                {
+                    configurationBuilder
+                        .AddUserSecrets<TStartup>();
+                }
+                catch (Exception e)
+                {
+                    const string error = "Exception occured when trying to add UserSecrets to app configuration. " + 
+                                         "If your app does not support user secrets, this was expected.";
+                    Console.WriteLine($"[{DateTime.UtcNow:s}] [Warning] {error}");
+                    logger.Warning(error, e);
+                }
             }
             return configurationBuilder;
         }
@@ -126,8 +163,6 @@ namespace Smairo.AspNetHosting
         /// <summary>
         /// Tries to add azure key vault using given configuration
         /// </summary>
-        /// <param name="configurationBuilder"></param>
-        /// <param name="configuration"></param>
         /// <returns></returns>
         internal static IConfigurationBuilder TryAddAzureKeyVault(this IConfigurationBuilder configurationBuilder, IConfiguration configuration)
         {
@@ -136,18 +171,20 @@ namespace Smairo.AspNetHosting
             var clientId = vaultSection?["ClientId"];
             var clientSecret = vaultSection?["ClientSecret"];
 
-            var logger = CreateLogger();
-
-            if (VaultSettingsHasValues(vaultUrl, clientId, clientSecret))
+            using (var logger = CreateLogger(new string[0]))
             {
-                configurationBuilder.AddAzureKeyVault(vaultUrl, clientId, clientSecret);
-                logger.Information("Valid Azure KeyVault configuration. Added to configuration sources");
-            }
-            else
-            {
-                // Should be shown in Kudu and app logs
-                Console.WriteLine($"Azure key vault could not be added. This might indicate that AzureKeyVault section (or AzureKeyVault:ClientId, AzureKeyVault:ClientSecret) is missing from configuration");
-                logger.Warning("Invalid Azure KeyVault configuration. KeyVault won't be used!");
+                if (VaultSettingsHasValues(vaultUrl, clientId, clientSecret))
+                {
+                    configurationBuilder.AddAzureKeyVault(vaultUrl, clientId, clientSecret);
+                    logger.Information("Valid Azure KeyVault configuration. Added to configuration sources");
+                }
+                else
+                {
+                    const string error = "Azure key vault could not be added. This might indicate that AzureKeyVault section " +
+                                         "(or AzureKeyVault:ClientId, AzureKeyVault:ClientSecret) is missing from configuration";
+                    Console.WriteLine($"[{DateTime.UtcNow:s}] [Warning] {error}");
+                    logger.Warning(error);
+                }
             }
             return configurationBuilder;
         }
@@ -165,6 +202,5 @@ namespace Smairo.AspNetHosting
                    && !string.IsNullOrWhiteSpace(clientId)
                    && !string.IsNullOrWhiteSpace(clientSecret);
         }
-        #endregion
     }
 }

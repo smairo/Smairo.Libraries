@@ -7,41 +7,52 @@ Also you can create Serilog logger using .net core default configuration sources
 Program.cs:
 ```
 using System;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Smairo.AspNetHosting;
 namespace Smairo.Example.WebApplication.NetCore
 {
+    // Install-Package Smairo.AspNetHosting
     public class Program
     {
         public static void Main(string[] args)
         {
-            var logger = HostExtensions.CreateLogger();
+            using var logger = HostExtensions.CreateLogger(new string[0]);
             try
             {
-                CreateWebHostBuilder(args)
+                CreateHostBuilder(args)
                     .Build()
                     .Run();
             }
             catch (Exception e)
             {
-                logger.Fatal($"Host crashed... Reason: {e}");
+                logger.Fatal("Aspnet host crashed! ", e);
+                Console.WriteLine(e);
             }
-            
+            finally
+            {
+                logger.Dispose();
+            }
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
-        {
-            return HostExtensions
-                .CreateExtendedBuilderWithLogging<Startup>()
-                .UseStartup<Startup>();
-				
-			// MS default
-            //return WebHost
-                //.CreateDefaultBuilder(args)
-                //.CreateExtendedBuilderWithLogging<Startup>()
-                //.UseStartup<Startup>();
-        }
+        // If nothing special required
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            new HostBuilder()
+                .CreateExtendedBuilderWithSerilog<Startup>(args);
+
+        // If customization required
+        public static IHostBuilder CreateHostBuilder2(string[] args) =>
+            new HostBuilder()
+                .CreateExtendedBuilderWithSerilog<Startup>(
+                    args, 
+                    kestrelConfiguration =>
+                    {
+                        kestrelConfiguration.Limits.MaxConcurrentConnections = 5000;
+                    },
+                    customConfiguration =>
+                    {
+                        customConfiguration.AddJsonFile("mycustomfile.json", optional: true);
+                    });
     }
 }
 ```
