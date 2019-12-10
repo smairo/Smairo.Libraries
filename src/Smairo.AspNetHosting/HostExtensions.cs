@@ -20,9 +20,13 @@ namespace Smairo.AspNetHosting
                 .CreateBaseConfigurations(args)
                 .Build();
 
-            return new LoggerConfiguration()
+            var logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
                 .CreateLogger();
+
+            Log.Logger = logger;
+
+            return logger;
         }
 
         /// <summary>

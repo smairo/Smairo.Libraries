@@ -38,21 +38,19 @@ namespace Smairo.Example.WebApplication.NetCore
         // If nothing special required
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             new HostBuilder()
-                .CreateExtendedBuilderWithSerilog<Startup>(args);
+                .CreateExtendedBuilderWithSerilog<Startup>(args)
+                .ConfigureWebHostDefaults(configure => { configure.UseStartup<Startup>(); });
 
         // If customization required
         public static IHostBuilder CreateHostBuilder2(string[] args) =>
             new HostBuilder()
                 .CreateExtendedBuilderWithSerilog<Startup>(
                     args, 
-                    kestrelConfiguration =>
-                    {
-                        kestrelConfiguration.Limits.MaxConcurrentConnections = 5000;
-                    },
                     customConfiguration =>
                     {
                         customConfiguration.AddJsonFile("mycustomfile.json", optional: true);
-                    });
+                    })
+                .ConfigureWebHostDefaults(configure => { configure.UseStartup<Startup>(); });
     }
 }
 ```
