@@ -42,6 +42,42 @@ namespace Smairo.Extensions.Tests
             Assert.Throws<InvalidOperationException>(() => _unspecifiedTestable.GetOffsetInHours(InvalidTz));
         }
 
+        [Fact]
+        public void Test_As_Unspecified()
+        {
+            var testableUtc = DateTime.UtcNow;
+            Assert.Equal(DateTimeKind.Utc, testableUtc.Kind);
+
+            var testableUtcAsUnspecifiedKind = testableUtc.AsUnspecifiedKind();
+            Assert.Equal(DateTimeKind.Unspecified, testableUtcAsUnspecifiedKind.Kind);
+            Assert.Equal(testableUtc.Ticks, testableUtcAsUnspecifiedKind.Ticks);
+
+            var testableLocal = DateTime.Now;
+            Assert.Equal(DateTimeKind.Local, testableLocal.Kind);
+
+            var testableLocalAsUnspecifiedKind = testableLocal.AsUnspecifiedKind();
+            Assert.Equal(DateTimeKind.Unspecified, testableLocalAsUnspecifiedKind.Kind);
+            Assert.Equal(testableLocal.Ticks, testableLocalAsUnspecifiedKind.Ticks);
+        }
+
+        [Fact]
+        public void Test_As_Utc()
+        {
+            var testableLocal = DateTime.Now;
+            Assert.Equal(DateTimeKind.Local, testableLocal.Kind);
+
+            var testableLocalAsUtc = testableLocal.AsUtcKind();
+            Assert.Equal(DateTimeKind.Utc, testableLocalAsUtc.Kind);
+            Assert.Equal(testableLocal.Ticks, testableLocalAsUtc.Ticks);
+
+            var testableUnspecified = new DateTime(DateTime.Now.Ticks, DateTimeKind.Unspecified);
+            Assert.Equal(DateTimeKind.Unspecified, testableUnspecified.Kind);
+
+            var testableUnspecifiedAsUtcKind = testableUnspecified.AsUtcKind();
+            Assert.Equal(DateTimeKind.Utc, testableUnspecifiedAsUtcKind.Kind);
+            Assert.Equal(testableUnspecified.Ticks, testableUnspecifiedAsUtcKind.Ticks);
+        }
+
         [Theory]
         [InlineData("2017-01-01T00:07:00", "2017-01-01T00:09:00", 3)]
         [InlineData("2017-01-01T00:42:00", "2017-01-01T00:45:00", 15)]

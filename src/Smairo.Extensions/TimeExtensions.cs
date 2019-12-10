@@ -83,6 +83,26 @@ namespace Smairo.Extensions
 
         }
 
+        /// <summary>
+        /// Creates <see cref="DateTime"/> with exact same stamp, but in <see cref="DateTimeKind.Unspecified"/>
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        public static DateTime AsUnspecifiedKind(this DateTime dateTime)
+        {
+            return new DateTime(dateTime.Ticks, DateTimeKind.Unspecified);
+        }
+
+        /// <summary>
+        /// Creates <see cref="DateTime"/> with exact same stamp, but in <see cref="DateTimeKind.Utc"/>
+        /// </summary>
+        /// <param name="dateTime"></param>
+        /// <returns></returns>
+        public static DateTime AsUtcKind(this DateTime dateTime)
+        {
+            return new DateTime(dateTime.Ticks, DateTimeKind.Utc);
+        }
+
         #region Private
         /// <summary>
         /// Gets <see cref="DateTimeZone"/> or throw <see cref="InvalidOperationException"/> if given zone is invalid
@@ -93,26 +113,6 @@ namespace Smairo.Extensions
         {
             var timeZone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(tz);
             return timeZone ?? throw new InvalidOperationException("Invalid timezone");
-        }
-
-        /// <summary>
-        /// Creates <see cref="DateTime"/> with exact same stamp, but in <see cref="DateTimeKind.Unspecified"/>
-        /// </summary>
-        /// <param name="dateTime"></param>
-        /// <returns></returns>
-        private static DateTime AsUnspecifiedKind(DateTime dateTime)
-        {
-            return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second, dateTime.Millisecond, DateTimeKind.Unspecified);
-        }
-
-        /// <summary>
-        /// Creates <see cref="DateTime"/> with exact same stamp, but in <see cref="DateTimeKind.Utc"/>
-        /// </summary>
-        /// <param name="dateTime"></param>
-        /// <returns></returns>
-        private static DateTime AsUtcKind(DateTime dateTime)
-        {
-            return new DateTime(dateTime.Year, dateTime.Month, dateTime.Day, dateTime.Hour, dateTime.Minute, dateTime.Second, dateTime.Millisecond, DateTimeKind.Utc);
         }
         #endregion
     }

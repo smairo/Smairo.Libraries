@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -32,28 +30,16 @@ namespace Smairo.AspNetHosting
         /// </summary>
         /// <typeparam name="TStartup"></typeparam>
         /// <returns></returns>
-        public static IHostBuilder CreateExtendedBuilderWithSerilog<TStartup>(this IHostBuilder hostBuilder,
+        public static IHostBuilder CreateExtendedBuilderWithSerilog<TStartup>(
+            this IHostBuilder hostBuilder,
             string[] args,
-            Action<KestrelServerOptions> kestrelConfiguration = null,
             Action<IConfigurationBuilder> customAppConfiguration = null) 
             where TStartup : class
         {
-            hostBuilder
+            Host
+                .CreateDefaultBuilder(args)
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .ConfigureAppConfiguration(appConfiguration => CreateAppConfiguration<TStartup>(appConfiguration, args))
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    if (kestrelConfiguration != null)
-                    {
-                        webBuilder
-                            .ConfigureKestrel(kestrelConfiguration);
-                    }
-
-                    webBuilder
-                        .UseKestrel()
-                        .UseIISIntegration()
-                        .UseStartup<TStartup>();
-                })
                 .UseSerilog(CreateSerilogLogging);
 
             if (customAppConfiguration != null)
