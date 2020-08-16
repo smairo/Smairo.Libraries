@@ -38,8 +38,7 @@ namespace Smairo.Example.WebApplication.NetCore
         // If nothing special required
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             new HostBuilder()
-                .CreateExtendedBuilderWithSerilog<Startup>(args)
-                .ConfigureWebHostDefaults(configure => { configure.UseStartup<Startup>(); });
+                .CreateExtendedBuilderWithSerilog<Startup>(args);
 
         // If customization required
         public static IHostBuilder CreateHostBuilder2(string[] args) =>
@@ -49,8 +48,7 @@ namespace Smairo.Example.WebApplication.NetCore
                     customConfiguration =>
                     {
                         customConfiguration.AddJsonFile("mycustomfile.json", optional: true);
-                    })
-                .ConfigureWebHostDefaults(configure => { configure.UseStartup<Startup>(); });
+                    });
     }
 }
 ```

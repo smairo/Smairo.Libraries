@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -40,8 +41,11 @@ namespace Smairo.AspNetHosting
             Action<IConfigurationBuilder> customAppConfiguration = null) 
             where TStartup : class
         {
-            Host
-                .CreateDefaultBuilder(args)
+            hostBuilder
+                .ConfigureWebHostDefaults(host =>
+                {
+                    host.UseStartup<TStartup>();
+                })
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .ConfigureAppConfiguration(appConfiguration => CreateAppConfiguration<TStartup>(appConfiguration, args))
                 .UseSerilog(CreateSerilogLogging);
