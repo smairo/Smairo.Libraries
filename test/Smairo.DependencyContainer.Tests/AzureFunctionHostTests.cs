@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Smairo.DependencyContainer.Azure;
 using Xunit;
 namespace Smairo.DependencyContainer.Tests
 {

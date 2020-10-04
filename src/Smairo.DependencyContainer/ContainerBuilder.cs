@@ -2,39 +2,35 @@
 using Microsoft.Extensions.DependencyInjection;
 namespace Smairo.DependencyContainer
 {
-    /// <inheritdoc />
     /// <summary>
-    /// This represents the builder entity for IoC container.
+    /// Wraps <see cref="IServiceProvider"/> for given <typeparam name="TStartup">TStartup</typeparam>
     /// </summary>
-    public class ContainerBuilder : IContainerBuilder
+    public class ContainerBuilder<TStartup>
+       where TStartup : BaseStartup 
     {
-        private readonly IServiceCollection _services;
+        private readonly IServiceProvider _provider;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ContainerBuilder"/> class.
+        /// ctor
         /// </summary>
         public ContainerBuilder()
         {
-            _services = new ServiceCollection();
-        }
-
-        /// <inheritdoc />
-        public IContainerBuilder RegisterModule(IModule module = null)
-        {
-            if (module == null)
-            {
-                module = new Module();
-            }
-
-            module.Load(_services);
-            return this;
-        }
-
-        /// <inheritdoc />
-        public IServiceProvider Build()
-        {
-            return _services
+            IContainerHost containerHost = new ContainerHost();
+            var startupInstance = Activator.CreateInstance<TStartup>();
+            startupInstance.Configure(containerHost);
+            _provider = containerHost
+                .Services
                 .BuildServiceProvider();
+        }
+
+        /// <summary>
+        /// Get service from the wrapper
+        /// </summary>
+        /// <typeparam name="TService"></typeparam>
+        /// <returns></returns>
+        public TService GetService<TService>()
+        {
+            return _provider.GetService<TService>();
         }
     }
 }

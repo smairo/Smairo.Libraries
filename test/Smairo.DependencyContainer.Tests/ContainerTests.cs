@@ -1,16 +1,12 @@
-using System;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 namespace Smairo.DependencyContainer.Tests
 {
     public class ContainerTests
     {
         // Container to create
-        internal static readonly IServiceProvider Container =
-            new ContainerBuilder()
-                .RegisterModule(new TestStartup())
-                .Build();
+        internal static readonly ContainerBuilder<TestStartup> Container =
+            new ContainerBuilder<TestStartup>();
 
         [Fact]
         public void Should_Create_Container_And_Use_MyInjectableClass()
