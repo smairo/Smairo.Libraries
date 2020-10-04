@@ -4,7 +4,7 @@
     <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <OutputType>Library</OutputType>
     <IsPackable>true</IsPackable>
-    <Version>3.0.0</Version>
+    <Version>3.0.1</Version>
     <Authors>Miro Holopainen</Authors>
     <Description>Contains container builder and module, that allows you to use dependency injection in pretty much anywhere</Description>
     <PackageProjectUrl>https://github.com/smairo/Smairo.Libraries/blob/master/src/Smairo.DependencyContainer/README.md</PackageProjectUrl>
