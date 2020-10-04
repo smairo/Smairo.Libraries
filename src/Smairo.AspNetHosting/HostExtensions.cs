@@ -148,7 +148,7 @@ namespace Smairo.AspNetHosting
                     const string error = "Exception occured when trying to add UserSecrets to app configuration. " + 
                                          "If your app does not support user secrets, this was expected.";
                     Console.WriteLine($"[{DateTime.UtcNow:s}] [Warning] {error}");
-                    logger.Warning(error, e);
+                    logger.Warning(e, error);
                 }
             }
             return configurationBuilder;

@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Smairo.DependencyContainer.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Smairo.Extensions.Tests", "test\Smairo.Extensions.Tests\Smairo.Extensions.Tests.csproj", "{7F52FAF6-7F0F-4352-AE56-F90EA819C20A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Smairo.AspNetHosting", "src\Smairo.AspNetHosting\Smairo.AspNetHosting.csproj", "{61D9543D-AF42-46A8-94B3-D0260BD72809}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Smairo.AspNetHosting", "src\Smairo.AspNetHosting\Smairo.AspNetHosting.csproj", "{61D9543D-AF42-46A8-94B3-D0260BD72809}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

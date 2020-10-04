@@ -1,15 +1,23 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System;
 namespace Smairo.DependencyContainer
 {
-    /// <inheritdoc />
     /// <summary>
-    /// This represents the entity containing a list of dependencies.
+    /// Module has been deprecated. This has been replaced with BaseStartup.
+    /// Check implementation details from https://github.com/smairo/Smairo.Libraries/tree/master/src/Smairo.DependencyContainer
     /// </summary>
+    [Obsolete("Module has been deprecated. This has been replaced with BaseStartup." +
+        "Check implementation details from https://github.com/smairo/Smairo.Libraries/tree/master/src/Smairo.DependencyContainer")]
+    public interface IModule
+    {
+    }
+
+    /// <summary>
+    /// Module has been deprecated. This has been replaced with BaseStartup.
+    /// Check implementation details from https://github.com/smairo/Smairo.Libraries/tree/master/src/Smairo.DependencyContainer
+    /// </summary>
+    [Obsolete("Module has been deprecated. This has been replaced with BaseStartup." +
+        "Check implementation details from https://github.com/smairo/Smairo.Libraries/tree/master/src/Smairo.DependencyContainer")]
     public class Module : IModule
     {
-        /// <inheritdoc />
-        public virtual void Load(IServiceCollection services)
-        {
-        }
     }
 }

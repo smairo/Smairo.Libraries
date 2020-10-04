@@ -3,21 +3,22 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 namespace Smairo.DependencyContainer.Tests
 {
-    public class TestStartup : IModule
+    public class TestStartup : BaseStartup
     {
-        /// <summary>
-        /// Add all required dependencies to <see cref="IServiceCollection"/> for tests
-        /// </summary>
-        /// <param name="services"></param>
-        public void Load(IServiceCollection services)
+        public override IConfiguration SetupConfiguration()
         {
             IConfiguration configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("testSettings.json", optional: false)
                 .Build();
 
+            return configuration;
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
             services.AddTransient<IMyInjectableClass, MyInjectableClass>();
-            services.AddTransient(_ => configuration);
+            services.AddTransient(_ => Configuration);
         }
     }
 }
