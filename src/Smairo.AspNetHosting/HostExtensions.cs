@@ -136,7 +136,7 @@ namespace Smairo.AspNetHosting
         internal static IConfigurationBuilder TryAddUserSecrets<TStartup>(this IConfigurationBuilder configurationBuilder)
             where TStartup : class
         {
-            using (var logger = CreateLogger(new string[0]))
+            using (var logger = CreateLogger(Array.Empty<string>()))
             {
                 try
                 {
@@ -165,7 +165,7 @@ namespace Smairo.AspNetHosting
             var clientId = vaultSection?["ClientId"];
             var clientSecret = vaultSection?["ClientSecret"];
 
-            using (var logger = CreateLogger(new string[0]))
+            using (var logger = CreateLogger(Array.Empty<string>()))
             {
                 if (VaultSettingsHasValues(vaultUrl, clientId, clientSecret))
                 {
